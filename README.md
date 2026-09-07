@@ -8,18 +8,36 @@ Files in `.claude/agents/` are verbatim copies from upstream (snapshot 2026-09-0
 
 The skills you already run (deal-analyzer, aged-out-sil, alf-senior, artemis, apollo, council, aletheia, and so on) are **playbooks**: step-by-step procedures with your rates, your vault, your voice. These agents are **personas**: who Claude should be while executing a step. A playbook says "underwrite this SIL house". A persona says "think like a controller while you build the expense tab". Use them inside skills, not instead of them.
 
+## Vader standby
+
+Vader, the Hermes Agent on Phil's Mac, orchestrates everything and launches jobs through the Claude subscription. Two things have to be true for the roster to be on standby for those jobs, and one script does both:
+
+```bash
+git clone https://github.com/mastahsamonte-stack/the-prime-strategy ~/Cowork/the-prime-strategy
+cd ~/Cowork/the-prime-strategy
+./scripts/standby.sh          # both targets
+./scripts/standby.sh status   # verify, change nothing
+```
+
+1. **Claude Code, global.** Copies all 71 agents to `~/.claude/agents`. Claude Code loads subagents from that folder in every session, so any job Vader launches, in any directory, can call them by name. Jobs started inside this repo also see them as project agents.
+2. **Hermes, as a plugin.** Installs `integrations/hermes/agency-agents-router` into `~/.hermes/plugins` and enables it in `~/.hermes/config.yaml`. Vader gets four tools, search, inspect, load, and delegate, and the roster stays on disk until asked for. Nothing is preloaded into Vader's skill catalog. Restart Vader once after installing.
+
+If Vader launches Claude in a fresh environment rather than on the Mac, it should clone this repo first so the project agents load, or run `./scripts/standby.sh claude` in that environment.
+
+Rebuild the plugin after any change to `.claude/agents/` with `./scripts/build-hermes.sh`.
+
 ## Use
 
 Inside this repo, every agent in `.claude/agents/` is available automatically as a project subagent. To make them available everywhere:
 
 ```bash
-./scripts/install.sh                 # all 71 into ~/.claude/agents
-./scripts/install.sh finance sales   # one or more divisions only
+./scripts/standby.sh claude          # all 71 into ~/.claude/agents
+./scripts/install.sh finance sales   # or one or more divisions only
 ```
 
 Then in any session: `Use the Loan Officer Assistant agent to pre-qualify this borrower.`
 
-Context note: every installed agent adds a line to the subagent list Claude reads each turn. Install globally only the divisions you use daily and leave the rest project-scoped here.
+Context note: every globally installed agent adds a line to the subagent list Claude reads each turn. Vader needs the full set on standby, so the default is all 71. If a session ever feels sluggish, trim with `install.sh` by division.
 
 ## The picks
 
