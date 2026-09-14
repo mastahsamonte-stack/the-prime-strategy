@@ -150,6 +150,16 @@ GIS Analyst, Spatial Data Scientist, Web GIS Developer. Market maps of demand, c
 ### Skipped divisions
 Game Development and Spatial Computing have no fit. Integrations is upstream tooling docs.
 
+## Prime skills (not agents)
+
+`.claude/skills/` holds skills built for Phil that live in this repo rather than in the synced
+skill library. Inside the repo they load automatically as project skills. To use one everywhere,
+copy its folder to `~/Cowork/skills/` (or `~/.claude/skills/`).
+
+| Skill | What it does | Pairs with |
+|---|---|---|
+| `commercial-underwriter` | Underwrites a commercial income property (office, retail, industrial/flex, 5+ unit multifamily, mixed-use, self-storage, single-tenant NNN) from an address, city, OM, or rent roll: market rents, rent roll and lease analysis, NOI, DSCR, cap rate, cash-on-cash, 5-year proforma, and the full capital need (down payment, closing, TI/LC, capex, reserves, acquisition fee). Deal mode for a specific property, market mode for "what would I need for a strip center in this town". `scripts/underwrite.py` does the math; run `python3 scripts/underwrite.py selftest` after editing it. | deal-analyzer, council, aletheia, devils-advocate, Financial Analyst, Loan Officer Assistant |
+
 ## Reference material (not agents)
 
 `reference/strategy/` holds the NEXUS orchestration doctrine from upstream: the master strategy, quick start, executive brief, handoff templates, and activation prompts. The Reality Checker gate and the handoff templates are the closest analog to the aletheia and devils-advocate gates and are worth mining when tightening those pipelines.
