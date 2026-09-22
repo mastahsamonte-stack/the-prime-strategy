@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New England Grants Scan</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a202c; --muted: #555f6d; --navy: #0D1B2A;
+    --line: #dde3ea; --head: #f0f4f8; --warn-bg: #fffbeb; --warn: #b45309;
+    --red: #b91c1c; --red-bg: #fef2f2; --good: #15803d; --good-bg: #f0fdf4; --accent: #1d4ed8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141b; --fg: #e6ebf1; --muted: #9aa6b4; --navy: #cfe0f5;
+      --line: #2a3441; --head: #18202b; --warn-bg: #2a2112; --warn: #fbbf24;
+      --red: #f87171; --red-bg: #2a1616; --good: #4ade80; --good-bg: #122218; --accent: #93b4ff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f141b; --fg: #e6ebf1; --muted: #9aa6b4; --navy: #cfe0f5;
+    --line: #2a3441; --head: #18202b; --warn-bg: #2a2112; --warn: #fbbf24;
+    --red: #f87171; --red-bg: #2a1616; --good: #4ade80; --good-bg: #122218; --accent: #93b4ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { color: var(--navy); font-size: 26px; margin: 0 0 4px; }
+  h2 { color: var(--navy); font-size: 20px; margin: 36px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  h3 { color: var(--navy); font-size: 16px; margin: 20px 0 6px; }
+  .stamp { color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  .table-wrap { overflow-x: auto; margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 720px; }
+  th, td { text-align: left; padding: 8px; border: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--head); }
+  .box { padding: 12px 14px; margin: 14px 0; border-left: 4px solid; border-radius: 4px; font-size: 14px; }
+  .warn { background: var(--warn-bg); border-color: var(--warn); }
+  .red { background: var(--red-bg); border-color: var(--red); }
+  .good { background: var(--good-bg); border-color: var(--good); }
+  .w { color: var(--warn); font-weight: 600; }
+  .r { color: var(--red); font-weight: 600; }
+  .yes { color: var(--good); font-weight: 600; }
+  .no { color: var(--red); font-weight: 600; }
+  .part { color: var(--warn); font-weight: 600; }
+  ul, ol { padding-left: 20px; }
+  .small { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>💰 New England Grants &amp; Funding Scan</h1>
+<div class="stamp">v1.0 · 2026-09-22 · Prepared for P.A.T.H. Operation (applicant: P.A.T.H. Operating Co., for-profit LLC) · States: MA, CT, RI, NH, VT, ME · Programs: aged-out foster youth, IDD/autism, sober/recovery, general supportive housing</div>
+
+<div class="box red">
+<strong>Fact-check status: nothing in this report has been checked against the original documents yet.</strong> This environment's network policy blocked direct access to every state and federal site (mass.gov, hud.gov, nhhfa.org, ri.gov, and others). Every figure below came from search results that quote a named source document. No original PDF was opened.
+<br>⚠ = the figure was found quoted from a named source, but that source was not opened. 🔴 = the amount has not been found yet.
+<br>Run Aletheia or gospel-review from a machine with open internet before putting any figure into underwriting. Vault memory (<code>verified-claims.md</code>) was not reachable either, so nothing was reused or written back.
+</div>
+
+<h2>1. The short answer</h2>
+<p><strong>For-profit status is the big filter.</strong> Most government <em>grant</em> money for these populations goes only to nonprofits, towns, or housing authorities. The money P.A.T.H. Operation can actually get comes in three forms, and none of them is a free check:</p>
+<ol>
+  <li><strong>Operating contracts and per-diem rates</strong>: DDS, DCF, BSAS, Medicaid waivers. This is the big recurring money, and in most states for-profits are allowed.</li>
+  <li><strong>0% deferred capital loans</strong>: MA FCF, NH OUD Capital. These work almost like grants because no payments are due as long as the housing stays affordable.</li>
+  <li><strong>Getting paid as a landlord</strong> by voucher holders: FUP, FYI, CHAP, RAP, MRVP.</li>
+</ol>
+<p>To get true grant money (CoC, HIF, CCRI, Section 811 capital, USDA), P.A.T.H. Operation needs a <strong>501(c)(3) partner or sister nonprofit</strong>. The nonprofit holds the grant and leases the property from the LLC, at arm's length.</p>
+
+<div class="box warn">
+<strong>⏰ Deadlines coming up:</strong>
+<ul style="margin:6px 0 0">
+  <li><strong>Sept 24, 2026</strong> (2 days away): MA Winter 2027 rental round pre-application. This round covers HSF, AHTF and LIHTC, and for-profits are eligible. The full application is due <strong>Dec 3, 2026</strong>. ⚠</li>
+  <li><strong>Sept 30, 2026</strong>: HUD CoC federal deadline. This one is for nonprofits and governments only, and local CoC deadlines have almost certainly passed.</li>
+  <li><strong>Now</strong>: RI BHDDH recovery housing RFP (about $4M), which was expected in summer 2026. Check whether RI Purchasing has released it. ⚠</li>
+</ul>
+</div>
+
+<h2>2. How much: best realistic money per state for a for-profit LLC</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>State</th><th>Best opportunity</th><th>How much</th><th>For-profit?</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><strong>MA</strong></td><td>DDS 24-hr IDD group home contract (ALTR) + <strong>Facilities Consolidation Fund (FCF)</strong> capital</td><td>FCF: up to <strong>50% of development cost, about $750K per project</strong>, as a 0%, 30-yr deferred loan. The DDS per-diem is paid per home per day (FY27 rates started 7/1/2026).</td><td class="yes">Yes</td><td>FCF ⚠ · DDS rate 🔴</td></tr>
+<tr><td><strong>MA</strong></td><td>Housing Stabilization Fund (HSF) in the Winter round</td><td><strong>$50K–$65K per unit</strong>, capped at $1M per project, minimum 5 units</td><td class="yes">Yes</td><td>⚠ (2016 guidelines)</td></tr>
+<tr><td><strong>MA</strong></td><td>MASH-certified sober homes + RHP/RAP</td><td>Up to <strong>$3,000 per resident</strong> (up to 100 days), paid for the resident's rent</td><td class="part">Indirect</td><td>⚠</td></tr>
+<tr><td><strong>CT</strong></td><td>DDS Qualified Provider → Community Living Arrangement (CLA) group home RFPs</td><td>About <strong>$112K per person per year</strong> on average (2023)</td><td class="yes">Yes (2 steps)</td><td>⚠ · per-day rate 🔴</td></tr>
+<tr><td><strong>CT</strong></td><td>DMHAS/ABH Supported Recovery Housing</td><td><strong>$600 per 30 days</strong> per person (about $20/day, 2021 rate)</td><td class="yes">Yes, explicitly</td><td>⚠ current rate</td></tr>
+<tr><td><strong>RI</strong></td><td>BHDDH recovery housing (RICARES Level II/III)</td><td><strong>$26–$33 per bed per night</strong>, stepping down over 365 days. RFP of about $4M.</td><td class="yes">Yes</td><td>⚠ (Feb 2026 rate sheet)</td></tr>
+<tr><td><strong>RI</strong></td><td>Housing 2030 Permanent Supportive Housing (5–30 units)</td><td>Pool of up to <strong>$12M</strong></td><td class="yes">Yes</td><td>⚠ Round 1 closed; Round 2 timing 🔴</td></tr>
+<tr><td><strong>NH</strong></td><td>OUD Supportive Housing Capital Program</td><td>Pool of <strong>$5.7M/yr</strong>. Minimum $150K per project; maximum possibly $2M. 0% deferred loan.</td><td class="yes">Yes (NH Housing's discretion)</td><td>⚠ · FY27 round 🔴</td></tr>
+<tr><td><strong>VT</strong></td><td>VDH recovery residence funding (VTARR-certified)</td><td>Statewide line of <strong>$1.2–1.4M/yr</strong> (sources conflict)</td><td class="part">Unclear</td><td>⚠ conflict</td></tr>
+<tr><td><strong>ME</strong></td><td>MaineCare Section 21 IDD Home Support per-diem</td><td>Per-diem under the new HMA-Burns rates</td><td class="yes">Yes, most open state</td><td>Rate 🔴</td></tr>
+<tr><td><strong>ME</strong></td><td>MARR Bed Sponsorship (recovery)</td><td><strong>$700</strong> first month per sponsored resident, paid to the operator</td><td class="yes">Yes</td><td>⚠</td></tr>
+<tr><td><strong>All</strong></td><td>LIHTC / HOME / HOME-ARP / Housing Trust Fund (as developer)</td><td>2026 state LIHTC ceiling: greater of $3.416 per resident or $3.95M</td><td class="yes">Yes</td><td>⚠</td></tr>
+</tbody></table></div>
+
+<h3>Ranking by how open each state is to a for-profit</h3>
+<p><strong>Most open:</strong> Maine (IDD, direct MaineCare enrollment), Rhode Island (recovery, PSH, DDO licensing), Massachusetts (FCF, contracts). <strong>In the middle:</strong> Connecticut (DDS qualified provider path, low recovery rate). <strong>Most closed:</strong> New Hampshire and Vermont. In both, IDD and youth money flows through regional nonprofit Area Agencies or Designated Agencies, so an outside provider can only get in as a subcontractor.</p>
+
+<h2>3. Federal programs (reach New England through state or housing-authority pass-throughs)</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Pays for</th><th>Amount</th><th>For-profit LLC?</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Chafee (CFCIP)</td><td>Aged-out youth services. Up to 30% can go to room and board, ages 18–21 (23 in some states).</td><td>$143M/yr nationally</td><td class="no">No, state only. Possible as a state vendor.</td><td>⚠</td></tr>
+<tr><td>Chafee ETV</td><td>College or training costs, including room and board</td><td>Up to $5,000 per youth per year</td><td class="part">Paid on the youth's behalf</td><td>⚠</td></tr>
+<tr><td>FUP / FYI vouchers</td><td>Rent subsidy for youth aged 18–24 leaving care (FYI: 36 months, extendable)</td><td>Local rent standard minus 30% of income. $30M for FUP in FY26.</td><td class="part">Landlord only</td><td>⚠ rolling</td></tr>
+<tr><td>HUD CoC / YHDP</td><td>Transitional, rapid rehousing and permanent supportive housing, plus services</td><td>About $4.04B national competition (FY26)</td><td class="no">No, nonprofit or government. Landlord only.</td><td>⚠ due 9/30/2026</td></tr>
+<tr><td>HUD ESG</td><td>Shelter, rapid rehousing, prevention</td><td>Formula grant 🔴</td><td class="no">No</td><td>—</td></tr>
+<tr><td>Section 811 PRA</td><td>Project-based rent for adults with disabilities</td><td>$158M national (FY26)</td><td class="part">Yes, as property owner through the state agency</td><td>⚠ FY26 closed 7/13</td></tr>
+<tr><td>Section 811 Capital Advance</td><td>Build or buy group homes; no repayment</td><td>Last round 2019: $13.4M</td><td class="no">No, 501(c)(3) only</td><td>No 2026 round</td></tr>
+<tr><td>SAMHSA SOR / SUPTRS block grant</td><td>Recovery supports, including recovery housing</td><td>Over $1.5B/yr nationally</td><td class="part">Through state certification and vouchers</td><td>⚠</td></tr>
+<tr><td>HUD Recovery Housing Program (RHP)</td><td>Recovery housing capital and up to 2 years of rent</td><td>MA about $1M/yr. VT $1.1M. NH up to $500K per subrecipient. ME up to $2.53M.</td><td class="no">Mostly no; towns and nonprofits</td><td>⚠</td></tr>
+<tr><td>USDA Community Facilities</td><td>Rural facilities in towns of 20,000 or fewer</td><td>Grant covers 35–75% of cost</td><td class="no">No</td><td>⚠</td></tr>
+<tr><td>HOME / HOME-ARP / HTF</td><td>Affordable rental capital</td><td>MA HOME-ARP $36.45M (spend by 9/30/2030)</td><td class="yes">Yes, as developer</td><td>⚠</td></tr>
+<tr><td>LIHTC 9% / 4%</td><td>Equity raised by selling tax credits</td><td>See state ceiling above</td><td class="yes">Yes, the standard for-profit path</td><td>⚠</td></tr>
+<tr><td>Title IV-E extended care (to 21)</td><td>Supervised independent living payments for ages 18–21</td><td>State rates 🔴</td><td class="yes">Yes, as placement contractor (MA, CT, ME)</td><td>⚠</td></tr>
+<tr><td>Medicaid HCBS 1915(c)</td><td>IDD residential habilitation</td><td>State rates 🔴</td><td class="yes">Yes, "any willing and qualified provider"</td><td>⚠</td></tr>
+<tr><td>Weatherization (WAP)</td><td>Energy retrofits done on the building</td><td>About $8K per unit on average</td><td class="part">Your building can receive the work</td><td>⚠</td></tr>
+<tr><td>ACF RHY Transitional Living</td><td>Homeless youth aged 16–22</td><td>🔴</td><td class="no">No, explicitly</td><td>—</td></tr>
+</tbody></table></div>
+
+<h2>4. State detail</h2>
+
+<h3>Massachusetts</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Amount</th><th>For-profit?</th><th>Apply / deadline</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>DDS Adult Long-Term Residential (101 CMR 420)</td><td>Per home per day, by staffing level. FY27 rates effective 7/1/2026.</td><td class="yes">Via contract</td><td>DDS rolling RFR on COMMBUYS</td><td>🔴 rate</td></tr>
+<tr><td>DCF Youth &amp; Young Adult (101 CMR 427): Supported Living and Group Residence</td><td>Rates rose 3.25% on 7/1/2025</td><td class="yes">Via contract (808 CMR 1.00 allows for-profits)</td><td>No open RFR. Watch COMMBUYS.</td><td>🔴 rate</td></tr>
+<tr><td>Facilities Consolidation Fund (FCF)</td><td>≤50% of development cost, about $750K per project, 0% 30-yr deferred loan</td><td class="yes">Yes</td><td>EOHLC/CEDAC, rolling. DDS or DMH must certify the project first.</td><td>⚠</td></tr>
+<tr><td>Community Based Housing (CBH)</td><td>≤50% of development cost, up to $750K per project, 0% deferred</td><td class="yes">Yes</td><td>EOHLC rounds</td><td>⚠</td></tr>
+<tr><td>Housing Stabilization Fund (HSF)</td><td>$50K–$65K per unit, ≤$1M per project</td><td class="yes">Yes</td><td>Winter round: pre-app 9/24, full app 12/3/2026</td><td>⚠</td></tr>
+<tr><td>Affordable Housing Trust Fund (AHTF)</td><td>🔴 per unit</td><td class="yes">Yes (single-purpose entity)</td><td>12/3/2026</td><td>⚠</td></tr>
+<tr><td>HIF / Supportive Housing NOFA</td><td>About $16M round; HIF up to $1M per project</td><td class="no">Nonprofit only</td><td>Expected fall round</td><td>⚠</td></tr>
+<tr><td>MassHousing CCRI (sober housing capital)</td><td>$700K/yr pool; awards of $185K–$300K; 1:1 match</td><td class="no">501(c)(3) only</td><td>FY27 cycle 🔴</td><td>⚠</td></tr>
+<tr><td>RHP / BSAS RAP</td><td>≤$3,000 per resident</td><td class="part">Indirect (MASH-certified home)</td><td>Ongoing</td><td>⚠</td></tr>
+<tr><td>Opioid Recovery &amp; Remediation Fund / Mosaic</td><td>$13M Mosaic; town mini-grants of $5K–$150K</td><td class="no">Mostly no</td><td>Check each town's RFP</td><td>⚠</td></tr>
+<tr><td>MassHealth Group Adult Foster Care / Adult Foster Care</td><td>GAFC $50/day. AFC $54.37 or $91.31/day (2024).</td><td class="yes">Yes, enrolled provider</td><td>Rolling</td><td>⚠</td></tr>
+<tr><td>MRVP / AHVP vouchers</td><td>Rent subsidy 🔴</td><td class="part">Landlord</td><td>Project-based: 12/3/2026</td><td>⚠</td></tr>
+</tbody></table></div>
+
+<h3>Connecticut</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Amount</th><th>For-profit?</th><th>Apply / deadline</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>DDS Community Living Arrangement (CLA) group homes</td><td>About $112K per person per year average</td><td class="yes">Yes: Qualified Provider first, then RFP (needs 24-hr CLA experience)</td><td>dds.providerapplications@ct.gov. FY27 RFPs 🔴</td><td>⚠</td></tr>
+<tr><td>DMHAS/ABH Supported Recovery Housing</td><td>$600 per 30 days</td><td class="yes">Yes ("proprietary" named)</td><td>ABH RFQC; 2026 status 🔴</td><td>⚠</td></tr>
+<tr><td>Opioid settlement "Housing as Recovery"</td><td>$58.6M over 4 yrs; $9,500 per person in services</td><td class="part">Landlord for RAP tenants</td><td>Not an open grant</td><td>⚠</td></tr>
+<tr><td>DCF CHAP / TLAP (young adults)</td><td>🔴</td><td class="part">Landlord for CHAP; TLAP goes to nonprofits</td><td>No 2026 RFP</td><td>🔴</td></tr>
+<tr><td>DOH Recovery Housing Program</td><td>About $6.5M NOFA</td><td class="no">Probably nonprofit or town</td><td>🔴</td><td>⚠</td></tr>
+<tr><td>DOH/CHFA Development Engagement Process + 9% LIHTC</td><td>About $59.6M DOH funding (2026)</td><td class="yes">Yes, as developer</td><td>Spring closed 5/22/26; next 🔴</td><td>⚠</td></tr>
+</tbody></table></div>
+
+<h3>Rhode Island</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Amount</th><th>For-profit?</th><th>Apply / deadline</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>BHDDH recovery housing</td><td>Level II $26/$21/$16 per night; Level III $33/$21.50/$20.20. About $4M RFP.</td><td class="yes">Yes (RICARES certification required)</td><td>Check RI Purchasing now</td><td>⚠</td></tr>
+<tr><td>BHDDH DDO license: IDD group living</td><td>🔴 per diem (in the OHIC 2025 benchmarks)</td><td class="yes">Yes</td><td>Rolling</td><td>🔴 rate</td></tr>
+<tr><td>Housing 2030 Permanent Supportive Housing</td><td>≤$12M set-aside; 5–30 units</td><td class="yes">Yes</td><td>Round 2 🔴</td><td>⚠</td></tr>
+<tr><td>RIHousing consolidated round (HPF, LIHTC)</td><td>HPF about $1.5M; 9% LIHTC about $3.5M/yr</td><td class="yes">Yes</td><td>Next round about Oct–Dec 2026 🔴</td><td>⚠</td></tr>
+<tr><td>DCYF Voluntary Extension of Care (18–21)</td><td>Stipend paid to the housing provider 🔴</td><td class="yes">Yes, as housing provider</td><td>Rolling</td><td>🔴</td></tr>
+<tr><td>RHP / Consolidated Homeless Fund</td><td>About $1M</td><td class="no">No</td><td>—</td><td>⚠</td></tr>
+</tbody></table></div>
+
+<h3>New Hampshire</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Amount</th><th>For-profit?</th><th>Apply / deadline</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>OUD Supportive Housing Capital Program</td><td>$5.7M/yr through FY27. ≥$150K per project; maximum possibly $2M. 0% deferred loan.</td><td class="yes">Yes (NH Housing's discretion)</td><td>FY26 closed 4/10/26; FY27 🔴</td><td>⚠</td></tr>
+<tr><td>Multifamily Supportive Housing</td><td>≤$1.25M per project, 0% deferred</td><td class="part">🔴</td><td>Annual NOFO</td><td>⚠</td></tr>
+<tr><td>NHCORR Housing Assistance</td><td>$400K program pool</td><td class="part">Indirect (certified homes)</td><td>Ongoing</td><td>⚠</td></tr>
+<tr><td>DD Waiver (BDS)</td><td>🔴</td><td class="no">Area Agency subcontract only</td><td>—</td><td>🔴</td></tr>
+<tr><td>DCYF HOPE (extended care to 21)</td><td>Foster rate $40.78–$50.97/day (ages 12–17)</td><td class="part">🔴</td><td>Contract went to Youth Villages</td><td>⚠</td></tr>
+<tr><td>RHP (NH CDFA)</td><td>≤$500K per subrecipient</td><td class="no">Towns only</td><td>Rolling</td><td>⚠</td></tr>
+</tbody></table></div>
+
+<h3>Vermont</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Amount</th><th>For-profit?</th><th>Apply / deadline</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>VDH recovery residence funding</td><td>$1.2M or $1.4M/yr</td><td class="part">🔴 (VTARR-certified homes)</td><td>🔴</td><td>⚠ conflict</td></tr>
+<tr><td>VHCB / Act 69 IDD housing</td><td>$16.75M for 69 homes; plan calls for $5–10M/yr</td><td class="part">Partly; pair with a Designated Agency</td><td>Rolling board meetings</td><td>⚠</td></tr>
+<tr><td>DAIL developmental services</td><td>New rate models from 10/1/2025 🔴</td><td class="no">Designated Agencies only</td><td>—</td><td>🔴</td></tr>
+<tr><td>DCF youth / HOP</td><td>🔴</td><td class="no">Nonprofits</td><td>—</td><td>—</td></tr>
+<tr><td>RHP (ACCD)</td><td>$1.12M (FY25); ≤$500K per project</td><td class="no">Towns only</td><td>🔴</td><td>⚠</td></tr>
+</tbody></table></div>
+
+<h3>Maine</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Program</th><th>Amount</th><th>For-profit?</th><th>Apply / deadline</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>MaineCare Section 21/29 IDD Home Support</td><td>New HMA-Burns rates; +1% on 1/1/2026 🔴</td><td class="yes">Yes: enroll directly, no gatekeeper agency</td><td>Rolling; license required</td><td>🔴 rate</td></tr>
+<tr><td>MARR certification + Bed Sponsorship</td><td>$700 for first 30 days per resident</td><td class="yes">Yes</td><td>Ongoing</td><td>⚠</td></tr>
+<tr><td>MaineHousing RHP</td><td>$2.53M pool; ≤$295K per unit</td><td class="part">🔴 (asked for 501(c)(3) before)</td><td>2026 closed 7/23</td><td>⚠</td></tr>
+<tr><td>Recovery Residence Pilot (operating subsidy)</td><td>🔴</td><td class="no">501(c)(3)</td><td>🔴</td><td>—</td></tr>
+<tr><td>Maine Recovery Council (opioid settlement)</td><td>$230M over 18 yrs</td><td class="no">2026 round: coalitions only</td><td>Closed 8/11/2026</td><td>⚠</td></tr>
+<tr><td>OCFS V9 extended support (to age 23)</td><td>🔴</td><td class="part">🔴</td><td>—</td><td>🔴</td></tr>
+</tbody></table></div>
+
+<h2>5. Recommended next moves</h2>
+<ol>
+  <li><strong>Decide this week about the MA Winter round</strong>: pre-application due 9/24, full application 12/3. This only makes sense if P.A.T.H. Operation has a 5+ unit project ready.</li>
+  <li><strong>Set up a sister 501(c)(3) or line up a nonprofit partner.</strong> It opens CoC, HIF, CCRI, Section 811 capital, USDA and most opioid money.</li>
+  <li><strong>IDD track:</strong> MA (DDS contract + FCF), ME (Section 21 direct enrollment), CT (DDS Qualified Provider).</li>
+  <li><strong>Recovery track:</strong> get certified first (MASH, RICARES, CTARR, NHCORR, VTARR, MARR). Certification is what unlocks every recovery dollar.</li>
+  <li><strong>Aged-out youth track:</strong> be the landlord for FUP/FYI/CHAP/VEC youth now, and watch COMMBUYS for the next MA DCF young-adult procurement.</li>
+  <li><strong>Pull the rate tables by hand:</strong> MA 101 CMR 420 / 427 / 346, the CT CLA rates by level of need, the RI OHIC 2025 IDD benchmarks, and the ME Section 21 T2016 rate.</li>
+</ol>
+
+<div class="box warn">
+<strong>⚠ Flagged for gospel-review:</strong>
+<ul style="margin:6px 0 0">
+  <li><strong>VT recovery residence line:</strong> $1.4M (Act 16) vs $1.2M (VDH FY26 memo). The conservative value, $1.2M, is used.</li>
+  <li><strong>NH OUD capital per-project maximum:</strong> $2M, from a Commission minute. The amount was cut off in the NOFO extract.</li>
+  <li><strong>CT "$25/day HUSKY for sober living":</strong> this came from a vendor blog. Likely wrong, so it was excluded.</li>
+  <li><strong>MA HSF per-unit figures:</strong> from the 2016 guidelines, so they may be out of date.</li>
+</ul>
+</div>
+
+<h2>Acronym Index</h2>
+<p class="small">
+ABH: Advanced Behavioral Health · ACCD: VT Agency of Commerce &amp; Community Development · ACF: Administration for Children &amp; Families · AFC: Adult Foster Care · AHTF: Affordable Housing Trust Fund · AHVP: Alternative Housing Voucher Program · ALTR: Adult Long-Term Residential · BDS: NH Bureau of Developmental Services · BHDDH: RI Dept. of Behavioral Healthcare, Developmental Disabilities &amp; Hospitals · BSAS: MA Bureau of Substance Addiction Services · CBH: Community Based Housing · CCRI: Community Care &amp; Recovery Initiative (MassHousing) · CDBG: Community Development Block Grant · CDFA: NH Community Development Finance Authority · CEDAC: Community Economic Development Assistance Corp. · CFCIP: Chafee Foster Care Independence Program · CHAP: Community Housing Assistance Program (CT DCF) · CHFA: CT Housing Finance Authority · CLA: Community Living Arrangement · CMR: Code of Massachusetts Regulations · CoC: Continuum of Care · COMMBUYS: MA procurement portal · CTARR: CT Alliance of Recovery Residences · DAIL: VT Dept. of Disabilities, Aging &amp; Independent Living · DCF: Dept. of Children &amp; Families · DCYF: Dept. of Children, Youth &amp; Families · DDO: Developmental Disabilities Organization · DDS: Dept. of Developmental Services · DEP: Development Engagement Process · DHHS: Dept. of Health &amp; Human Services · DMH: Dept. of Mental Health · DMHAS: CT Dept. of Mental Health &amp; Addiction Services · DOH: CT Dept. of Housing · EOHLC: MA Executive Office of Housing &amp; Livable Communities · ESG: Emergency Solutions Grants · ETV: Education &amp; Training Vouchers · FCF: Facilities Consolidation Fund · FUP: Family Unification Program · FYI: Foster Youth to Independence · GAFC: Group Adult Foster Care · HCBS: Home &amp; Community-Based Services · HIF: Housing Innovations Fund · HOME-ARP: HOME American Rescue Plan · HOP: Housing Opportunity Grant Program · HPF: Housing Production Fund · HSF: Housing Stabilization Fund · HTF: Housing Trust Fund · HUD: U.S. Dept. of Housing &amp; Urban Development · IDD: Intellectual &amp; Developmental Disabilities · LIHTC: Low-Income Housing Tax Credit · LLC: Limited Liability Company · MARR: Maine Association of Recovery Residences · MASH: MA Alliance for Sober Housing · MAT: Medication for Addiction Treatment · MRVP: MA Rental Voucher Program · NHCORR: NH Coalition of Recovery Residences · NOFA/NOFO: Notice of Funding Availability/Opportunity · OCFS: ME Office of Child &amp; Family Services · OHIC: RI Office of the Health Insurance Commissioner · OUD: Opioid Use Disorder · PHA: Public Housing Agency · PRA: Project Rental Assistance · PSH: Permanent Supportive Housing · RAP: Rental Assistance Program · RFP/RFR/RFQC: Request for Proposals/Responses/Qualified Contractors · RHP: Recovery Housing Program · RHY: Runaway &amp; Homeless Youth · RICARES: RI Communities for Addiction Recovery Efforts · SAMHSA: Substance Abuse &amp; Mental Health Services Administration · SOR: State Opioid Response · SUPTRS: Substance Use Prevention, Treatment &amp; Recovery Services Block Grant · TLAP: Transitional Living Apartment Program · USDA: U.S. Dept. of Agriculture · VDH: Vermont Dept. of Health · VEC: Voluntary Extension of Care · VHCB: Vermont Housing &amp; Conservation Board · VTARR: Vermont Alliance for Recovery Residences · WAP: Weatherization Assistance Program · YHDP: Youth Homelessness Demonstration Program
+</p>
+<p class="small">Sourced by grant-dispatcher's direct research: 4 parallel research passes (federal; MA; CT+RI; NH+VT+ME) on 2026-09-22. foster-youth-scout and housing-subsidy-finder were not run because they need a specific address. Run them once a property is picked.</p>
+
+</main>
+</body>
+</html>
