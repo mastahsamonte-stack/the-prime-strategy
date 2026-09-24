@@ -4,8 +4,9 @@ This repo is the curated specialist roster for Phil's operating system. It is or
 
 ## Roster
 
-- `.claude/agents/` holds 71 agent personas (verbatim from msitarzewski/agency-agents, MIT). Inside this repo they load automatically as project subagents. On Phil's Mac they are also installed globally by `scripts/standby.sh`, so any Claude Code job Vader launches, in any directory, can use them.
+- `.claude/agents/` holds 71 agent personas (verbatim from msitarzewski/agency-agents, MIT) plus Phil's own `prime-` agents: the Research Agent and the Verdict Agent. Inside this repo they load automatically as project subagents. On Phil's Mac they are also installed globally by `scripts/standby.sh`, so any Claude Code job Vader launches, in any directory, can use them.
 - `integrations/hermes/agency-agents-router/` is the same roster packaged as a Hermes plugin so Vader can search, inspect, load, or delegate to a specialist lazily.
+- `command-center/` is the job ledger, dispatcher, and phone board that runs the `prime-` agents. See `command-center/README.md`.
 - `README.md` maps every agent to the Phil skill it supports. Read it before choosing an agent.
 
 ## Working rules for a Claude session in this repo

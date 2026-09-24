@@ -19,25 +19,34 @@ cd ~/Cowork/the-prime-strategy
 ./scripts/standby.sh status   # verify, change nothing
 ```
 
-1. **Claude Code, global.** Copies all 71 agents to `~/.claude/agents`. Claude Code loads subagents from that folder in every session, so any job Vader launches, in any directory, can call them by name. Jobs started inside this repo also see them as project agents.
+1. **Claude Code, global.** Copies all 73 agents (71 upstream plus the 2 `prime-` agents) to `~/.claude/agents`. Claude Code loads subagents from that folder in every session, so any job Vader launches, in any directory, can call them by name. Jobs started inside this repo also see them as project agents.
 2. **Hermes, as a plugin.** Installs `integrations/hermes/agency-agents-router` into `~/.hermes/plugins` and enables it in `~/.hermes/config.yaml`. Vader gets four tools, search, inspect, load, and delegate, and the roster stays on disk until asked for. Nothing is preloaded into Vader's skill catalog. Restart Vader once after installing.
 
 If Vader launches Claude in a fresh environment rather than on the Mac, it should clone this repo first so the project agents load, or run `./scripts/standby.sh claude` in that environment.
 
 Rebuild the plugin after any change to `.claude/agents/` with `./scripts/build-hermes.sh`.
 
+## Prime Command Center
+
+Two agents of Phil's own run jobs end to end, and a web board shows them working from any browser, including a phone:
+
+- **Research Agent** (`prime-research-agent`): takes an order, picks the right skill, finds or creates the matching vault folder (an existing `IDD` folder is reused), runs the skill, and files the report.
+- **Verdict Agent** (`prime-verdict-agent`): reads the report and gives the bottom line, YES / MAYBE / NO, in `VERDICT.md`.
+
+Setup, phone access, and voice orders: [`command-center/README.md`](command-center/README.md).
+
 ## Use
 
 Inside this repo, every agent in `.claude/agents/` is available automatically as a project subagent. To make them available everywhere:
 
 ```bash
-./scripts/standby.sh claude          # all 71 into ~/.claude/agents
+./scripts/standby.sh claude          # all 73 into ~/.claude/agents
 ./scripts/install.sh finance sales   # or one or more divisions only
 ```
 
 Then in any session: `Use the Loan Officer Assistant agent to pre-qualify this borrower.`
 
-Context note: every globally installed agent adds a line to the subagent list Claude reads each turn. Vader needs the full set on standby, so the default is all 71. If a session ever feels sluggish, trim with `install.sh` by division.
+Context note: every globally installed agent adds a line to the subagent list Claude reads each turn. Vader needs the full set on standby, so the default is all 73. If a session ever feels sluggish, trim with `install.sh` by division.
 
 ## The picks
 

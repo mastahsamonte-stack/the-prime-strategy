@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Prime Command Center</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --panel: #ffffff; --ink: #14171c; --muted: #5f6673; --line: #e2e5ea;
+    --accent: #3b5bdb; --yes: #1f8a4c; --maybe: #b7791f; --no: #c0392b;
+    --working: #3b5bdb; --queued: #7a8190; --needs: #b7791f; --failed: #c0392b; --done: #1f8a4c;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115; --panel: #171a21; --ink: #e8eaef; --muted: #9aa1ad; --line: #262b35;
+      --accent: #7b93ff; --yes: #4cc27f; --maybe: #e0a84a; --no: #ef6b5d;
+      --working: #7b93ff; --queued: #8b919c; --needs: #e0a84a; --failed: #ef6b5d; --done: #4cc27f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 4px 0 14px; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 8px; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+  form { display: grid; gap: 10px; }
+  textarea { width: 100%; min-height: 84px; resize: vertical; padding: 12px; font: inherit; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 11px 18px;
+    background: var(--accent); color: #fff; cursor: pointer; min-height: 44px; }
+  button:disabled { opacity: .5; }
+  .agents { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+  .agent .name { font-weight: 650; }
+  .agent .now { margin-top: 6px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: var(--queued); }
+  .dot.busy { background: var(--working); animation: pulse 1.4s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .job { margin-bottom: 10px; }
+  .job summary { list-style: none; cursor: pointer; }
+  .job summary::-webkit-details-marker { display: none; }
+  .order { font-weight: 600; overflow-wrap: anywhere; }
+  .step { font-size: 13px; color: var(--muted); margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .pill { font-size: 12px; font-weight: 650; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .s-working { color: var(--working); } .s-queued { color: var(--queued); } .s-needs-phil { color: var(--needs); }
+  .s-failed { color: var(--failed); } .s-done { color: var(--done); }
+  .verdict { margin-top: 10px; padding: 10px 12px; border-radius: 10px; border-left: 4px solid; background: var(--bg); }
+  .v-YES { border-color: var(--yes); } .v-MAYBE { border-color: var(--maybe); } .v-NO { border-color: var(--no); }
+  .verdict b.YES { color: var(--yes); } .verdict b.MAYBE { color: var(--maybe); } .verdict b.NO { color: var(--no); }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 8px; overflow-wrap: anywhere; }
+  .links { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .links a { color: var(--accent); font-weight: 600; text-decoration: none; font-size: 14px; }
+  ol.history { margin: 10px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+  ol.history li { margin: 3px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .banner { padding: 12px 14px; border-radius: 10px; border: 1px solid var(--needs); color: var(--ink); margin-bottom: 14px; }
+  .empty { text-align: center; color: var(--muted); padding: 24px 8px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Prime Command Center</h1>
+    <span class="muted" id="updated">connecting…</span>
+  </header>
+  <div id="banner"></div>
+
+  <section class="panel">
+    <form id="orderForm">
+      <label for="order" class="muted">New order. Tap the mic on your keyboard to speak it.</label>
+      <textarea id="order" placeholder="e.g. Research IDD group homes in Columbus, Ohio. Is 123 Main St a buy?"></textarea>
+      <div class="row">
+        <span class="muted" id="formMsg">The Research Agent picks the skill and the folder.</span>
+        <button id="send" type="submit">Send order</button>
+      </div>
+    </form>
+  </section>
+
+  <h2>Agents</h2>
+  <div class="agents" id="agents"></div>
+
+  <h2>Jobs</h2>
+  <div id="jobs"><div class="empty">No jobs yet.</div></div>
+</main>
+
+<script>
+(() => {
+  const KEY = "prime-cc-token";
+  const store = {
+    get() { try { return localStorage.getItem(KEY) || ""; } catch { return ""; } },
+    set(v) { try { localStorage.setItem(KEY, v); } catch {} },
+  };
+  const qs = new URLSearchParams(location.search);
+  let token = qs.get("t") || store.get();
+  if (qs.get("t")) { store.set(token); history.replaceState(null, "", location.pathname); }
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const ago = (iso) => {
+    if (!iso) return "";
+    const s = Math.max(0, (Date.now() - new Date(iso)) / 1000);
+    if (s < 60) return "just now";
+    if (s < 3600) return Math.floor(s / 60) + " min ago";
+    if (s < 86400) return Math.floor(s / 3600) + " h ago";
+    return new Date(iso).toLocaleDateString();
+  };
+  const fileUrl = (id, which) => `/api/jobs/${encodeURIComponent(id)}/${which}?t=${encodeURIComponent(token)}`;
+  const open = new Set();
+  let vault = "";
+  const short = (p) => (vault && p && p.startsWith(vault + "/")) ? "vault/" + p.slice(vault.length + 1) : p;
+
+  function banner(html) { $("banner").innerHTML = html ? `<div class="banner">${html}</div>` : ""; }
+
+  function renderAgents(agents, jobs) {
+    $("agents").innerHTML = Object.entries(agents).map(([slug, a]) => {
+      const job = jobs.find((j) => j.agent === slug && j.status === "working");
+      return `<div class="panel agent">
+        <div class="name"><span class="dot ${job ? "busy" : ""}"></span>${esc(a.emoji)} ${esc(a.label)}</div>
+        <div class="now">${job ? esc(job.step) : "Idle, waiting for orders"}</div>
+      </div>`;
+    }).join("");
+  }
+
+  function renderJobs(jobs, agents) {
+    if (!jobs.length) { $("jobs").innerHTML = '<div class="empty">No jobs yet. Send your first order above.</div>'; return; }
+    $("jobs").innerHTML = jobs.map((j) => {
+      const who = agents[j.agent]?.label || j.agent || "";
+      const v = j.verdict;
+      const verdict = v ? `<div class="verdict v-${esc(v.call)}"><b class="${esc(v.call)}">${esc(v.call)}</b>
+          <span class="muted">· ${esc(v.confidence)} confidence</span><div>${esc(v.line)}</div></div>` : "";
+      const links = [
+        j.report ? `<a href="${fileUrl(j.id, "report")}" target="_blank" rel="noopener">Report</a>` : "",
+        v && v.file ? `<a href="${fileUrl(j.id, "verdict")}" target="_blank" rel="noopener">Verdict</a>` : "",
+        `<a href="${fileUrl(j.id, "log")}" target="_blank" rel="noopener">Log</a>`,
+      ].join("");
+      const hist = (j.history || []).slice().reverse().map((h) =>
+        `<li>${esc(ago(h.at))} · ${esc(agents[h.agent]?.label || h.agent || "")}: ${esc(h.step.split(vault + "/").join("vault/"))}</li>`).join("");
+      return `<details class="panel job" data-id="${esc(j.id)}" ${open.has(j.id) ? "open" : ""}>
+        <summary>
+          <div class="row"><span class="pill s-${esc(j.status)}">${esc(j.status.replace("-", " "))}</span>
+            <span class="muted">${esc(ago(j.updated))}</span></div>
+          <div class="order" style="margin-top:8px">${esc(j.order)}</div>
+          <div class="step">${esc(who)}: ${esc(j.step)}</div>
+          ${verdict}
+        </summary>
+        <div class="meta">${j.skill ? "Skill: " + esc(j.skill) + "<br>" : ""}${j.folder ? "Folder: " + esc(short(j.folder)) + "<br>" : ""}Job ${esc(j.id)}</div>
+        <div class="links">${links}</div>
+        ${hist ? `<ol class="history">${hist}</ol>` : ""}
+      </details>`;
+    }).join("");
+    document.querySelectorAll("details.job").forEach((d) =>
+      d.addEventListener("toggle", () => d.open ? open.add(d.dataset.id) : open.delete(d.dataset.id)));
+  }
+
+  async function refresh() {
+    if (!token) { banner("Open the link that <code>cc.py serve</code> printed (it ends in <code>?t=…</code>) once on this device."); return; }
+    try {
+      const r = await fetch("/api/jobs", { headers: { "X-Prime-Token": token } });
+      if (r.status === 401) { banner("This device has the wrong token. Run <code>cc.py token</code> on the Mac Mini and open <code>/?t=TOKEN</code>."); return; }
+      const data = await r.json();
+      banner("");
+      vault = data.vault || "";
+      renderAgents(data.agents, data.jobs);
+      renderJobs(data.jobs, data.agents);
+      $("updated").textContent = "updated " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    } catch {
+      $("updated").textContent = "offline, retrying…";
+    }
+  }
+
+  $("orderForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const order = $("order").value.trim();
+    if (!order) return;
+    $("send").disabled = true; $("formMsg").textContent = "Sending…";
+    try {
+      const r = await fetch("/api/dispatch", { method: "POST",
+        headers: { "Content-Type": "application/json", "X-Prime-Token": token },
+        body: JSON.stringify({ order }) });
+      if (!r.ok) throw new Error((await r.json()).error || r.status);
+      $("order").value = ""; $("formMsg").textContent = "Order sent. The Research Agent is on it.";
+      refresh();
+    } catch (err) {
+      $("formMsg").textContent = "Could not send: " + err.message;
+    } finally { $("send").disabled = false; }
+  });
+
+  refresh();
+  setInterval(refresh, 5000);
+})();
+</script>
+</body>
+</html>
