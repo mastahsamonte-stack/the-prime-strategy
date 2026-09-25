@@ -10,6 +10,7 @@
     "healthcare": { "label": "Healthcare", "icon": "Stethoscope", "color": "#0D9488" },
     "marketing": { "label": "Marketing", "icon": "Megaphone", "color": "#F97316" },
     "paid-media": { "label": "Paid Media", "icon": "Target", "color": "#EAB308" },
+    "prime": { "label": "Prime Command", "icon": "Radar", "color": "#3B5BDB" },
     "product": { "label": "Product", "icon": "Box", "color": "#D946EF" },
     "project-management": { "label": "Project Management", "icon": "ClipboardList", "color": "#0EA5E9" },
     "research": { "label": "Research", "icon": "Search", "color": "#7C3AED" },
