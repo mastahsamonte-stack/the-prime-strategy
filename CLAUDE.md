@@ -16,3 +16,4 @@ This repo is the curated specialist roster for Phil's operating system. It is or
 - Do not edit agent files in place to customize them. Copy to a new file with a `prime-` prefix so upstream refreshes stay clean.
 - After adding or removing any file in `.claude/agents/`, run `./scripts/build-hermes.sh` and commit the regenerated `integrations/hermes/` output.
 - Vault captures follow `~/Cowork/olympus/AI_SYNC_PROTOCOL.md` when that path exists. Draft only; never install skills or update memory without Phil's approval.
+- The command-center board token (`~/Cowork/olympus/command-center/token`) is a password. Never print, echo, summarize, or include it in any output, and never show a URL containing `?t=`. To hand it to a device, write it to a QR code or file that Phil opens himself, then delete that file.
