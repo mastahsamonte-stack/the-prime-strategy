@@ -67,6 +67,8 @@ It never overwrites a skill it didn't put there. Before every job the dispatcher
 
 ### Bottom line on a report you already have
 
+From the board, just ask: *"Bottom line on my 12 Oak St report."* The Research Agent finds the newest matching report under `~/Cowork`, files a copy in the vault, and hands it to the Verdict Agent. From Terminal:
+
 ```bash
 python3 command-center/cc.py verdict "path/to/report.html" "Should I buy this as an IDD home?" --topic IDD --sub "12 Oak St"
 ```
@@ -85,7 +87,7 @@ Then check that `05 Knowledge/Research/…` (or your existing matching folder) h
 
 ## Permissions for unattended runs
 
-Nobody is at the keyboard to click "allow", so jobs run with a fixed allowlist: reading and writing files, web search and fetch, skills, subagents, and `python3`/`mkdir`/`cp`/`ls` in the shell. If a job needs anything else, that tool is denied and the job says so on the board. The usual cases are Chrome for DealSauce or Go High Level, and email connectors. Widen it deliberately, for example:
+Jobs can read and write the vault and `~/Cowork` (where skills save their reports; change with `PRIME_ADD_DIRS`). Nobody is at the keyboard to click "allow", so jobs run with a fixed allowlist: reading and writing files, web search and fetch, skills, subagents, and `python3`/`mkdir`/`cp`/`ls` in the shell. If a job needs anything else, that tool is denied and the job says so on the board. The usual cases are Chrome for DealSauce or Go High Level, and email connectors. Widen it deliberately, for example:
 
 ```bash
 export PRIME_CLAUDE_FLAGS="--permission-mode auto"

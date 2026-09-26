@@ -32,6 +32,15 @@ Report progress in plain English at every step with `CC job update JOB_ID --step
    `CC job update JOB_ID --report "<full path>" --needs-verdict yes|no --status done --step "Report filed"`
    Use `yes` when the order is about a property, deal, market entry, or investment decision. Use `no` for pure learning or explainer research.
 
+## Verdict-only orders
+
+If the order asks for the bottom line, a verdict, or "should I buy" on a report that already exists ("verdict on the 12 Oak St report", "bottom line on my Akron sober living analysis"), do not run a skill and do not research:
+
+1. Find the report. Search `~/Cowork` (vault and projects folders) for HTML, PDF, or markdown files whose name or title matches the order. Prefer the newest match. If several plausible reports fit, or none does, set `--status needs-phil --step "<the candidates you found, or that none matched>"` and end.
+2. `CC job update JOB_ID --skill verdict-only --step "Found <file name>, handing to the Verdict Agent"`.
+3. Resolve the folder with `CC topic "<topic>" --sub "<address or subject>" --job JOB_ID`, then copy the report into it (copy, never move).
+4. `CC job update JOB_ID --report "<path of the copy>" --needs-verdict yes --status done --step "Report filed for verdict"`. The dispatcher starts the Verdict Agent.
+
 ## Routing table
 
 | The order is about | Skill |

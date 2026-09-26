@@ -51,6 +51,9 @@ DEFAULT_CLAUDE_FLAGS = (
     "'Bash(python3:*)' 'Bash(mkdir:*)' 'Bash(cp:*)' 'Bash(ls:*)' 'Bash(weasyprint:*)'"
 )
 CLAUDE_FLAGS = os.environ.get("PRIME_CLAUDE_FLAGS", DEFAULT_CLAUDE_FLAGS)
+# Extra folders jobs may read and write besides the vault: skills save reports under
+# ~/Cowork/projects, and verdict-only orders search there. Colon-separated.
+ADD_DIRS = os.environ.get("PRIME_ADD_DIRS", "~/Cowork").split(":")
 
 STATUSES = ("queued", "working", "needs-phil", "done", "failed")
 CALLS = ("YES", "MAYBE", "NO")
@@ -173,7 +176,8 @@ def _claude(agent: str, prompt: str, log: Path) -> int:
     # Run from the repo so the prime- agents load even if standby.sh hasn't installed
     # them globally; --add-dir gives the job the vault.
     VAULT.mkdir(parents=True, exist_ok=True)
-    cmd = [CLAUDE, "-p", "--agent", agent, "--add-dir", str(VAULT), *shlex.split(CLAUDE_FLAGS)]
+    dirs = [str(VAULT)] + [d for d in (Path(p).expanduser() for p in ADD_DIRS) if d.is_dir()]
+    cmd = [CLAUDE, "-p", "--agent", agent, "--add-dir", *dirs, *shlex.split(CLAUDE_FLAGS)]
     with log.open("a") as out:
         out.write(f"\n===== {now()} {agent}\n")
         out.flush()
