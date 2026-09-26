@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copy the curated agents into your global Claude Code agents folder.
-#   ./scripts/install.sh                      # install all 71
+#   ./scripts/install.sh                      # install every agent
 #   ./scripts/install.sh finance sales        # install only these divisions (filename prefix)
 #   DRY_RUN=1 ./scripts/install.sh            # show what would be copied
 set -euo pipefail
