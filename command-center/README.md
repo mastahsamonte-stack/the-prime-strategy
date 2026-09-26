@@ -47,12 +47,33 @@ The board only listens on the Mac Mini itself. That's on purpose: it can start C
 
 Only devices signed in to your Tailscale account can open it.
 
+## Skills the agents can use
+
+Your skills live in your Claude account. The Claude desktop app keeps a local copy, but Claude Code (which runs the agents) only reads `~/.claude/skills`. `scripts/sync-skills.sh` bridges the two:
+
+```bash
+./scripts/sync-skills.sh           # preview: what it would add, refresh, or skip. Changes nothing.
+./scripts/sync-skills.sh --apply   # copy them in (run once, and again when you add a new skill)
+```
+
+It never overwrites a skill it didn't put there. Before every job the dispatcher runs `--refresh`, which updates the skills you already approved so edits in the Claude app reach the agents, and never adds new ones. If a job stops with "Skill … is not installed", run the preview and `--apply`.
+
 ## Give orders
 
 - **Board:** type in the box, or tap the microphone on your phone keyboard and speak. Then tap **Send order**.
 - **Terminal:** `python3 command-center/cc.py dispatch "research IDD group homes in Ohio"` (add `--bg` to return right away).
 - **Vader, including Telegram voice notes:** tell Vader once:
   > When I give you a research, feasibility, or "should I buy this" order, run `python3 ~/Cowork/the-prime-strategy/command-center/cc.py dispatch --bg "<my order>"` and reply with the job id. Don't do the research yourself.
+
+### Bottom line on a report you already have
+
+From the board, just ask: *"Bottom line on my 12 Oak St report."* The Research Agent finds the newest matching report under `~/Cowork`, files a copy in the vault, and hands it to the Verdict Agent. From Terminal:
+
+```bash
+python3 command-center/cc.py verdict "path/to/report.html" "Should I buy this as an IDD home?" --topic IDD --sub "12 Oak St"
+```
+
+The report is copied into the vault topic folder (the original stays put), and the Verdict Agent writes `VERDICT.md` next to it. The job shows on the board like any other.
 
 ## Test it first
 
@@ -66,7 +87,7 @@ Then check that `05 Knowledge/Research/…` (or your existing matching folder) h
 
 ## Permissions for unattended runs
 
-Nobody is at the keyboard to click "allow", so jobs run with a fixed allowlist: reading and writing files, web search and fetch, skills, subagents, and `python3`/`mkdir`/`cp`/`ls` in the shell. If a job needs anything else, that tool is denied and the job says so on the board. The usual cases are Chrome for DealSauce or Go High Level, and email connectors. Widen it deliberately, for example:
+Jobs can read and write the vault and `~/Cowork` (where skills save their reports; change with `PRIME_ADD_DIRS`). Nobody is at the keyboard to click "allow", so jobs run with a fixed allowlist: reading and writing files, web search and fetch, skills, subagents, and `python3`/`mkdir`/`cp`/`ls` in the shell. If a job needs anything else, that tool is denied and the job says so on the board. The usual cases are Chrome for DealSauce or Go High Level, and email connectors. Widen it deliberately, for example:
 
 ```bash
 export PRIME_CLAUDE_FLAGS="--permission-mode auto"

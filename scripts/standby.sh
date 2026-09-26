@@ -10,7 +10,7 @@
 # Claude Code only loads subagents from ~/.claude/agents (global) or the job's own
 # .claude/agents. Jobs rarely start inside this repo, so the global copy is what
 # keeps the roster available. The Hermes plugin lets Vader itself search, load,
-# and delegate to the same 71 specialists without preloading them as skills.
+# and delegate to the same specialists without preloading them as skills.
 #
 # Env overrides: CLAUDE_CONFIG_DIR (default ~/.claude), HERMES_HOME (default ~/.hermes)
 set -euo pipefail

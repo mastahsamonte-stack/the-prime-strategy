@@ -4,6 +4,7 @@
 One file, standard library only, so it runs on the Mac Mini with nothing to install.
 
   cc.py dispatch "research IDD group homes in Ohio"   # run a job now (add --bg to detach)
+  cc.py verdict path/to/report.html --topic IDD       # bottom line on a report you already have
   cc.py serve                                         # start the board on http://127.0.0.1:8787
   cc.py topic "IDD" --sub "123 Main St, Columbus OH"  # find or create the vault folder
   cc.py job new|update|verdict|show|list ...          # what the agents call to report status
@@ -24,11 +25,13 @@ import os
 import re
 import secrets
 import shlex
+import shutil
 import subprocess
 import sys
 import threading
 import time
 from datetime import datetime, timezone
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -45,9 +48,12 @@ CLAUDE = os.environ.get("PRIME_CLAUDE", "claude")
 DEFAULT_CLAUDE_FLAGS = (
     "--permission-mode acceptEdits --allowedTools "
     "Read Write Edit Glob Grep WebSearch WebFetch Skill Agent Task TodoWrite "
-    "'Bash(python3:*)' 'Bash(mkdir:*)' 'Bash(cp:*)' 'Bash(ls:*)'"
+    "'Bash(python3:*)' 'Bash(mkdir:*)' 'Bash(cp:*)' 'Bash(ls:*)' 'Bash(weasyprint:*)'"
 )
 CLAUDE_FLAGS = os.environ.get("PRIME_CLAUDE_FLAGS", DEFAULT_CLAUDE_FLAGS)
+# Extra folders jobs may read and write besides the vault: skills save reports under
+# ~/Cowork/projects, and verdict-only orders search there. Colon-separated.
+ADD_DIRS = os.environ.get("PRIME_ADD_DIRS", "~/Cowork").split(":")
 
 STATUSES = ("queued", "working", "needs-phil", "done", "failed")
 CALLS = ("YES", "MAYBE", "NO")
@@ -170,7 +176,8 @@ def _claude(agent: str, prompt: str, log: Path) -> int:
     # Run from the repo so the prime- agents load even if standby.sh hasn't installed
     # them globally; --add-dir gives the job the vault.
     VAULT.mkdir(parents=True, exist_ok=True)
-    cmd = [CLAUDE, "-p", "--agent", agent, "--add-dir", str(VAULT), *shlex.split(CLAUDE_FLAGS)]
+    dirs = [str(VAULT)] + [d for d in (Path(p).expanduser() for p in ADD_DIRS) if d.is_dir()]
+    cmd = [CLAUDE, "-p", "--agent", agent, "--add-dir", *dirs, *shlex.split(CLAUDE_FLAGS)]
     with log.open("a") as out:
         out.write(f"\n===== {now()} {agent}\n")
         out.flush()
@@ -191,6 +198,12 @@ def run_job(job_id: str) -> dict:
     LOGS.mkdir(parents=True, exist_ok=True)
     log = LOGS / f"{job_id}.log"
     cc = f"python3 {shlex.quote(str(Path(__file__).resolve()))}"
+    # Pick up Phil's latest edits to skills he already approved; never installs new ones.
+    sync = HERE.parent / "scripts" / "sync-skills.sh"
+    if sync.exists():
+        with log.open("a") as out:
+            subprocess.run([str(sync), "--refresh"], stdout=out, stderr=subprocess.STDOUT,
+                           stdin=subprocess.DEVNULL)
     job = update_job(job_id, status="working", agent="prime-research-agent",
                      step="Research Agent picked up the order")
     brief = (
@@ -211,8 +224,12 @@ def run_job(job_id: str) -> dict:
     if job.get("needs_verdict") is False:
         return job
 
-    update_job(job_id, status="working", agent="prime-verdict-agent",
-               step="Verdict Agent is reading the report")
+    return run_verdict(job_id, log, cc)
+
+
+def run_verdict(job_id: str, log: Path, cc: str) -> dict:
+    job = update_job(job_id, status="working", agent="prime-verdict-agent",
+                     step="Verdict Agent is reading the report")
     brief = (
         f"JOB_ID: {job_id}\nCC: {cc}\n\nOriginal order: {job['order']}\n"
         f"Report: {job['report']}\nFolder: {job['folder']}\n\n"
@@ -229,6 +246,25 @@ def run_job(job_id: str) -> dict:
     if job["status"] == "working":
         job = update_job(job_id, status="done", step="Verdict delivered")
     return job
+
+
+def verdict_only(report: str, question: str | None, topic: str, sub: str | None) -> dict:
+    """Give an existing report to the Verdict Agent. The report is copied into a vault
+    folder first, so the verdict lands next to it and the board can open both."""
+    src = Path(report).expanduser().resolve()
+    if not src.is_file():
+        raise SystemExit(f"no such report: {src}")
+    folder = Path(resolve_topic(topic, sub or src.stem)["folder"])
+    dest = folder / src.name
+    if dest.resolve() != src:
+        shutil.copy2(src, dest)
+    order = question or f"Bottom line on {src.name}: should I buy or invest?"
+    job = new_job(order, agent="prime-verdict-agent")
+    update_job(job["id"], topic=topic, folder=str(folder), report=str(dest),
+               step=f"Report copied into {folder}")
+    LOGS.mkdir(parents=True, exist_ok=True)
+    cc = f"python3 {shlex.quote(str(Path(__file__).resolve()))}"
+    return run_verdict(job["id"], LOGS / f"{job['id']}.log", cc)
 
 
 def dispatch(order: str, background: bool) -> dict:
@@ -268,13 +304,18 @@ class Board(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):  # keep the terminal quiet
         pass
 
-    def _authed(self, query: dict) -> bool:
+    def _authed(self, query: dict, cookie_ok: bool = True) -> bool:
         given = self.headers.get("X-Prime-Token") or (query.get("t") or [""])[0]
+        if not given and cookie_ok:
+            morsel = SimpleCookie(self.headers.get("Cookie") or "").get("prime_token")
+            given = morsel.value if morsel else ""
         return hmac.compare_digest(given.encode(), self.token.encode())
 
-    def _send(self, code: int, body: bytes, ctype: str, sandbox: bool = False) -> None:
+    def _send(self, code: int, body: bytes, ctype: str, sandbox: bool = False, cookie: bool = False) -> None:
         self.send_response(code)
         self.send_header("Content-Type", ctype)
+        if cookie:  # lets report/log links open without the token in their URL
+            self.send_header("Set-Cookie", f"prime_token={self.token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=31536000")
         if sandbox:  # vault files render in an opaque origin, away from the board's token
             self.send_header("Content-Security-Policy", "sandbox")
         self.send_header("Cache-Control", "no-store")
@@ -283,18 +324,19 @@ class Board(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _json(self, code: int, data) -> None:
-        self._send(code, json.dumps(data).encode(), "application/json")
+    def _json(self, code: int, data, cookie: bool = False) -> None:
+        self._send(code, json.dumps(data).encode(), "application/json", cookie=cookie)
 
     def do_GET(self):
         url = urlparse(self.path)
         query = parse_qs(url.query)
         if url.path in ("/", "/index.html"):
-            return self._send(200, (HERE / "board.html").read_bytes(), "text/html; charset=utf-8")
+            return self._send(200, (HERE / "board.html").read_bytes(), "text/html; charset=utf-8",
+                              cookie=self._authed(query))
         if not self._authed(query):
             return self._json(401, {"error": "token required"})
         if url.path == "/api/jobs":
-            return self._json(200, {"jobs": list_jobs(), "agents": AGENTS, "vault": str(VAULT)})
+            return self._json(200, {"jobs": list_jobs(), "agents": AGENTS, "vault": str(VAULT)}, cookie=True)
         m = re.fullmatch(r"/api/jobs/([0-9a-z-]+)/(report|verdict|log)", url.path)
         if m:
             job_id, which = m.groups()
@@ -316,7 +358,7 @@ class Board(BaseHTTPRequestHandler):
 
     def do_POST(self):
         url = urlparse(self.path)
-        if not self._authed(parse_qs(url.query)):
+        if not self._authed(parse_qs(url.query), cookie_ok=False):
             return self._json(401, {"error": "token required"})
         if url.path != "/api/dispatch":
             return self._json(404, {"error": "not found"})
@@ -351,6 +393,11 @@ def main(argv: list[str] | None = None) -> None:
     d = sub.add_parser("dispatch", help="create a job and run the agents on it")
     d.add_argument("order", nargs="+")
     d.add_argument("--bg", action="store_true", help="return immediately; the job runs in the background")
+    v = sub.add_parser("verdict", help="ask the Verdict Agent for the bottom line on an existing report")
+    v.add_argument("report", help="path to the report (HTML, PDF, or markdown)")
+    v.add_argument("question", nargs="?", help='optional, e.g. "Should I buy 12 Oak St as an IDD home?"')
+    v.add_argument("--topic", default="Verdicts", help="vault topic folder to file it under, e.g. IDD")
+    v.add_argument("--sub", help="subfolder, e.g. the property address (default: report name)")
     r = sub.add_parser("run", help="run an existing queued job")
     r.add_argument("job_id")
 
@@ -386,6 +433,8 @@ def main(argv: list[str] | None = None) -> None:
         out = dispatch(" ".join(a.order), a.bg)
     elif a.cmd == "run":
         out = run_job(a.job_id)
+    elif a.cmd == "verdict":
+        out = verdict_only(a.report, a.question, a.topic, a.sub)
     elif a.cmd == "serve":
         return serve(a.host, a.port)
     elif a.cmd == "token":

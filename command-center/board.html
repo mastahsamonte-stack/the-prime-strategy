@@ -73,7 +73,7 @@
   <section class="panel">
     <form id="orderForm">
       <label for="order" class="muted">New order. Tap the mic on your keyboard to speak it.</label>
-      <textarea id="order" placeholder="e.g. Research IDD group homes in Columbus, Ohio. Is 123 Main St a buy?"></textarea>
+      <textarea id="order" placeholder="e.g. Is 123 Main St, Columbus OH a buy as an IDD home?  Or: Bottom line on my 12 Oak St report"></textarea>
       <div class="row">
         <span class="muted" id="formMsg">The Research Agent picks the skill and the folder.</span>
         <button id="send" type="submit">Send order</button>
@@ -109,7 +109,8 @@
     if (s < 86400) return Math.floor(s / 3600) + " h ago";
     return new Date(iso).toLocaleDateString();
   };
-  const fileUrl = (id, which) => `/api/jobs/${encodeURIComponent(id)}/${which}?t=${encodeURIComponent(token)}`;
+  // Links carry no token: the server set an HttpOnly cookie when this page loaded, so copying a link never leaks the key.
+  const fileUrl = (id, which) => `/api/jobs/${encodeURIComponent(id)}/${which}`;
   const open = new Set();
   let vault = "";
   const short = (p) => (vault && p && p.startsWith(vault + "/")) ? "vault/" + p.slice(vault.length + 1) : p;
