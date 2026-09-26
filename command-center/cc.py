@@ -191,6 +191,12 @@ def run_job(job_id: str) -> dict:
     LOGS.mkdir(parents=True, exist_ok=True)
     log = LOGS / f"{job_id}.log"
     cc = f"python3 {shlex.quote(str(Path(__file__).resolve()))}"
+    # Pick up Phil's latest edits to skills he already approved; never installs new ones.
+    sync = HERE.parent / "scripts" / "sync-skills.sh"
+    if sync.exists():
+        with log.open("a") as out:
+            subprocess.run([str(sync), "--refresh"], stdout=out, stderr=subprocess.STDOUT,
+                           stdin=subprocess.DEVNULL)
     job = update_job(job_id, status="working", agent="prime-research-agent",
                      step="Research Agent picked up the order")
     brief = (

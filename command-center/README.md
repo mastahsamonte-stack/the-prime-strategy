@@ -47,6 +47,17 @@ The board only listens on the Mac Mini itself. That's on purpose: it can start C
 
 Only devices signed in to your Tailscale account can open it.
 
+## Skills the agents can use
+
+Your skills live in your Claude account. The Claude desktop app keeps a local copy, but Claude Code (which runs the agents) only reads `~/.claude/skills`. `scripts/sync-skills.sh` bridges the two:
+
+```bash
+./scripts/sync-skills.sh           # preview: what it would add, refresh, or skip. Changes nothing.
+./scripts/sync-skills.sh --apply   # copy them in (run once, and again when you add a new skill)
+```
+
+It never overwrites a skill it didn't put there. Before every job the dispatcher runs `--refresh`, which updates the skills you already approved so edits in the Claude app reach the agents, and never adds new ones. If a job stops with "Skill … is not installed", run the preview and `--apply`.
+
 ## Give orders
 
 - **Board:** type in the box, or tap the microphone on your phone keyboard and speak. Then tap **Send order**.

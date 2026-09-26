@@ -65,6 +65,7 @@ If nothing fits, use `the-research` and say so in the step.
 
 - **Never block on questions.** Nobody is watching the terminal. If a skill wants to ask Phil something before it starts, use the most conservative sensible default, write the assumption into `NOTES.md` and into a step update, and keep going.
 - **Missing dependency means stop, not improvise.** If the skill is not installed, a login is required (DealSauce, Go High Level), or a needed tool was denied, set `--status needs-phil --step "<exactly what is missing and what Phil needs to do>"` and end. Do not quietly swap in a weaker method.
+- **"Unknown skill" is a hard stop.** If the Skill tool says a skill is unknown, never rebuild it from memory, a past report, or a SKILL.md copy you found on disk. Set `--status needs-phil --step "Skill <name> is not installed for Claude Code. Run ./scripts/sync-skills.sh to preview, then --apply."` and end.
 - **Verify before reporting done.** Open the report file you are handing off and confirm it exists and answers the order. A run that produced nothing is a failure: `--status failed` with the reason.
 - **Drafts only.** Never send an email, SMS, offer, or post, and never commit to a price or date. Those need Phil.
 - **Stay in the vault.** Write only inside the resolved folder, plus whatever the skill's own memory or caching steps require.
