@@ -65,6 +65,14 @@ It never overwrites a skill it didn't put there. Before every job the dispatcher
 - **Vader, including Telegram voice notes:** tell Vader once:
   > When I give you a research, feasibility, or "should I buy this" order, run `python3 ~/Cowork/the-prime-strategy/command-center/cc.py dispatch --bg "<my order>"` and reply with the job id. Don't do the research yourself.
 
+### Bottom line on a report you already have
+
+```bash
+python3 command-center/cc.py verdict "path/to/report.html" "Should I buy this as an IDD home?" --topic IDD --sub "12 Oak St"
+```
+
+The report is copied into the vault topic folder (the original stays put), and the Verdict Agent writes `VERDICT.md` next to it. The job shows on the board like any other.
+
 ## Test it first
 
 Before your first real order, give it a small one and watch every step:

@@ -4,6 +4,7 @@
 One file, standard library only, so it runs on the Mac Mini with nothing to install.
 
   cc.py dispatch "research IDD group homes in Ohio"   # run a job now (add --bg to detach)
+  cc.py verdict path/to/report.html --topic IDD       # bottom line on a report you already have
   cc.py serve                                         # start the board on http://127.0.0.1:8787
   cc.py topic "IDD" --sub "123 Main St, Columbus OH"  # find or create the vault folder
   cc.py job new|update|verdict|show|list ...          # what the agents call to report status
@@ -24,6 +25,7 @@ import os
 import re
 import secrets
 import shlex
+import shutil
 import subprocess
 import sys
 import threading
@@ -218,8 +220,12 @@ def run_job(job_id: str) -> dict:
     if job.get("needs_verdict") is False:
         return job
 
-    update_job(job_id, status="working", agent="prime-verdict-agent",
-               step="Verdict Agent is reading the report")
+    return run_verdict(job_id, log, cc)
+
+
+def run_verdict(job_id: str, log: Path, cc: str) -> dict:
+    job = update_job(job_id, status="working", agent="prime-verdict-agent",
+                     step="Verdict Agent is reading the report")
     brief = (
         f"JOB_ID: {job_id}\nCC: {cc}\n\nOriginal order: {job['order']}\n"
         f"Report: {job['report']}\nFolder: {job['folder']}\n\n"
@@ -236,6 +242,25 @@ def run_job(job_id: str) -> dict:
     if job["status"] == "working":
         job = update_job(job_id, status="done", step="Verdict delivered")
     return job
+
+
+def verdict_only(report: str, question: str | None, topic: str, sub: str | None) -> dict:
+    """Give an existing report to the Verdict Agent. The report is copied into a vault
+    folder first, so the verdict lands next to it and the board can open both."""
+    src = Path(report).expanduser().resolve()
+    if not src.is_file():
+        raise SystemExit(f"no such report: {src}")
+    folder = Path(resolve_topic(topic, sub or src.stem)["folder"])
+    dest = folder / src.name
+    if dest.resolve() != src:
+        shutil.copy2(src, dest)
+    order = question or f"Bottom line on {src.name}: should I buy or invest?"
+    job = new_job(order, agent="prime-verdict-agent")
+    update_job(job["id"], topic=topic, folder=str(folder), report=str(dest),
+               step=f"Report copied into {folder}")
+    LOGS.mkdir(parents=True, exist_ok=True)
+    cc = f"python3 {shlex.quote(str(Path(__file__).resolve()))}"
+    return run_verdict(job["id"], LOGS / f"{job['id']}.log", cc)
 
 
 def dispatch(order: str, background: bool) -> dict:
@@ -364,6 +389,11 @@ def main(argv: list[str] | None = None) -> None:
     d = sub.add_parser("dispatch", help="create a job and run the agents on it")
     d.add_argument("order", nargs="+")
     d.add_argument("--bg", action="store_true", help="return immediately; the job runs in the background")
+    v = sub.add_parser("verdict", help="ask the Verdict Agent for the bottom line on an existing report")
+    v.add_argument("report", help="path to the report (HTML, PDF, or markdown)")
+    v.add_argument("question", nargs="?", help='optional, e.g. "Should I buy 12 Oak St as an IDD home?"')
+    v.add_argument("--topic", default="Verdicts", help="vault topic folder to file it under, e.g. IDD")
+    v.add_argument("--sub", help="subfolder, e.g. the property address (default: report name)")
     r = sub.add_parser("run", help="run an existing queued job")
     r.add_argument("job_id")
 
@@ -399,6 +429,8 @@ def main(argv: list[str] | None = None) -> None:
         out = dispatch(" ".join(a.order), a.bg)
     elif a.cmd == "run":
         out = run_job(a.job_id)
+    elif a.cmd == "verdict":
+        out = verdict_only(a.report, a.question, a.topic, a.sub)
     elif a.cmd == "serve":
         return serve(a.host, a.port)
     elif a.cmd == "token":
