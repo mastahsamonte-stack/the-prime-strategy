@@ -29,6 +29,7 @@ import sys
 import threading
 import time
 from datetime import datetime, timezone
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -45,7 +46,7 @@ CLAUDE = os.environ.get("PRIME_CLAUDE", "claude")
 DEFAULT_CLAUDE_FLAGS = (
     "--permission-mode acceptEdits --allowedTools "
     "Read Write Edit Glob Grep WebSearch WebFetch Skill Agent Task TodoWrite "
-    "'Bash(python3:*)' 'Bash(mkdir:*)' 'Bash(cp:*)' 'Bash(ls:*)'"
+    "'Bash(python3:*)' 'Bash(mkdir:*)' 'Bash(cp:*)' 'Bash(ls:*)' 'Bash(weasyprint:*)'"
 )
 CLAUDE_FLAGS = os.environ.get("PRIME_CLAUDE_FLAGS", DEFAULT_CLAUDE_FLAGS)
 
@@ -274,13 +275,18 @@ class Board(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):  # keep the terminal quiet
         pass
 
-    def _authed(self, query: dict) -> bool:
+    def _authed(self, query: dict, cookie_ok: bool = True) -> bool:
         given = self.headers.get("X-Prime-Token") or (query.get("t") or [""])[0]
+        if not given and cookie_ok:
+            morsel = SimpleCookie(self.headers.get("Cookie") or "").get("prime_token")
+            given = morsel.value if morsel else ""
         return hmac.compare_digest(given.encode(), self.token.encode())
 
-    def _send(self, code: int, body: bytes, ctype: str, sandbox: bool = False) -> None:
+    def _send(self, code: int, body: bytes, ctype: str, sandbox: bool = False, cookie: bool = False) -> None:
         self.send_response(code)
         self.send_header("Content-Type", ctype)
+        if cookie:  # lets report/log links open without the token in their URL
+            self.send_header("Set-Cookie", f"prime_token={self.token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=31536000")
         if sandbox:  # vault files render in an opaque origin, away from the board's token
             self.send_header("Content-Security-Policy", "sandbox")
         self.send_header("Cache-Control", "no-store")
@@ -289,18 +295,19 @@ class Board(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _json(self, code: int, data) -> None:
-        self._send(code, json.dumps(data).encode(), "application/json")
+    def _json(self, code: int, data, cookie: bool = False) -> None:
+        self._send(code, json.dumps(data).encode(), "application/json", cookie=cookie)
 
     def do_GET(self):
         url = urlparse(self.path)
         query = parse_qs(url.query)
         if url.path in ("/", "/index.html"):
-            return self._send(200, (HERE / "board.html").read_bytes(), "text/html; charset=utf-8")
+            return self._send(200, (HERE / "board.html").read_bytes(), "text/html; charset=utf-8",
+                              cookie=self._authed(query))
         if not self._authed(query):
             return self._json(401, {"error": "token required"})
         if url.path == "/api/jobs":
-            return self._json(200, {"jobs": list_jobs(), "agents": AGENTS, "vault": str(VAULT)})
+            return self._json(200, {"jobs": list_jobs(), "agents": AGENTS, "vault": str(VAULT)}, cookie=True)
         m = re.fullmatch(r"/api/jobs/([0-9a-z-]+)/(report|verdict|log)", url.path)
         if m:
             job_id, which = m.groups()
@@ -322,7 +329,7 @@ class Board(BaseHTTPRequestHandler):
 
     def do_POST(self):
         url = urlparse(self.path)
-        if not self._authed(parse_qs(url.query)):
+        if not self._authed(parse_qs(url.query), cookie_ok=False):
             return self._json(401, {"error": "token required"})
         if url.path != "/api/dispatch":
             return self._json(404, {"error": "not found"})
